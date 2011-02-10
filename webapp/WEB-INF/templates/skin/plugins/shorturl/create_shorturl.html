@@ -1,0 +1,19 @@
+<script type="text/javascript">
+$(document).ready(function(){ 
+// Associate an event handler with the form submission action 
+$('#form_url').submit(function(e) { 
+// Retrieve the form's URL field value 
+ var url = $('#url').val(); 
+ // POST the URL 
+ $.post( "jsp/site/Portal.jsp?page=shorturl&value=do_create", {url: url}, function(data){ 
+ if (data == "FALSE") { $("#response").html("There was a problem shortening your URL"); } else { $("#response").html("Your shortened URL: <a href='" + data + "'>" + data + "</a>"); } }, "text" ); // Prevent the form from actually submitting e.preventDefault(); }); }); 
+ </script>
+ 
+<form id="form_url" name="form_url" action="jsp/site/Portal.jsp?page=shorturl" method="post">
+<input type="hidden" name="action" value="do_create" />
+ <label for="url">Shorten a URL, any URL:</label><br /> 
+ <input type="text" id="url" name="url" value="" size="50" /><br /> 
+ <input type="submit" name="submit" value="Shorten It!" /> 
+ </form> 
+ <br /> 
+ <div id="response"><#if result??>${result}</#if></div> 
