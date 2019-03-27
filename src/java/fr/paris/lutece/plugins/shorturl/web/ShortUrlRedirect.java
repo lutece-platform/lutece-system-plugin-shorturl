@@ -31,7 +31,7 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.shorturl.service;
+package fr.paris.lutece.plugins.shorturl.web;
 
 import java.io.IOException;
 
@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import fr.paris.lutece.plugins.shorturl.business.ShortUrl;
 import fr.paris.lutece.plugins.shorturl.business.ShortUrlHome;
+import fr.paris.lutece.plugins.shorturl.service.ShortUrlRedirectService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
@@ -71,7 +72,7 @@ public class ShortUrlRedirect extends HttpServlet
     {
         String strParam = getUrlParam( request );
         String strKey = strParam.substring( strParam.lastIndexOf( "/" ), strParam.length( ) );
-        ShortUrl shortUrl = ShortUrlHome.findByPrimaryKey( strKey, _plugin );
+        ShortUrl shortUrl = ShortUrlRedirectService.getShortener(strKey);
         String strDestination = "";
         if ( shortUrl == null )
         {

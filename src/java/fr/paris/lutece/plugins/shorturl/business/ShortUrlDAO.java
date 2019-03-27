@@ -34,11 +34,12 @@
 
 package fr.paris.lutece.plugins.shorturl.business;
 
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.util.sql.DAOUtil;
-
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.util.sql.DAOUtil;
 
 /**
  * This class provides Data Access methods for ShortUrl objects
@@ -49,41 +50,17 @@ public final class ShortUrlDAO implements IShortUrlDAO
 
     // Constants
 
-    private static final String SQL_QUERY_NEW_PK = "SELECT max( id_shorturl ) FROM shorturl";
     private static final String SQL_QUERY_SELECT = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl WHERE id_shorturl = ?";
     private static final String SQL_QUERY_SELECT_BY_ABBRV = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl WHERE abbreviation = ?";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO shorturl ( id_shorturl, shorturl_url, abbreviation, creation_date, hits ) VALUES ( ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO shorturl ( shorturl_url, abbreviation, creation_date, hits ) VALUES ( ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM shorturl WHERE id_shorturl = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE shorturl SET id_shorturl = ?, shorturl_url = ?, abbreviation = ?, creation_date = ?, hits = ? WHERE id_shorturl = ?";
+    private static final String SQL_QUERY_DELETE_BY_ABBRV = "DELETE FROM shorturl WHERE abbreviation  = ? ";
+    
+    private static final String SQL_QUERY_UPDATE = "UPDATE shorturl SET  shorturl_url = ?, abbreviation = ?, creation_date = ?, hits = ? WHERE id_shorturl = ?";
     private static final String SQL_QUERY_SELECTALL = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl";
 
-    /**
-     * Generates a new primary key
-     * 
-     * @param plugin
-     *            The Plugin
-     * @return The new primary key
-     */
-
-    public int newPrimaryKey( Plugin plugin )
-    {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin );
-        daoUtil.executeQuery( );
-
-        int nKey;
-
-        if ( !daoUtil.next( ) )
-        {
-            // if the table is empty
-            nKey = 1;
-        }
-
-        nKey = daoUtil.getInt( 1 ) + 1;
-        daoUtil.free( );
-
-        return nKey;
-    }
+   
 
     /**
      * Insert a new record in the table.
@@ -96,17 +73,18 @@ public final class ShortUrlDAO implements IShortUrlDAO
 
     public void insert( ShortUrl shortUrl, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
-
-        shortUrl.setIdShortener( newPrimaryKey( plugin ) );
-
-        daoUtil.setInt( 1, shortUrl.getIdShortener( ) );
-        daoUtil.setString( 2, shortUrl.getShortenerUrl( ) );
-        daoUtil.setString( 3, shortUrl.getAbbreviation( ) );
-        daoUtil.setTimestamp( 4, shortUrl.getCreationDate( ) );
-        daoUtil.setInt( 5, shortUrl.getHits( ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT,Statement.RETURN_GENERATED_KEYS, plugin );
+        
+        daoUtil.setString( 1, shortUrl.getShortenerUrl( ) );
+        daoUtil.setString( 2, shortUrl.getAbbreviation( ) );
+        daoUtil.setTimestamp( 3, shortUrl.getCreationDate( ) );
+        daoUtil.setInt( 4, shortUrl.getHits( ) );
 
         daoUtil.executeUpdate( );
+        if ( daoUtil.nextGeneratedKey( ) )
+        {
+        	shortUrl.setIdShortener( daoUtil.getGeneratedKeyInt( 1 ) );
+        }
         daoUtil.free( );
     }
 
@@ -237,5 +215,14 @@ public final class ShortUrlDAO implements IShortUrlDAO
         daoUtil.free( );
         return shortUrl;
     }
+
+	@Override
+	public void delete(String strKey, Plugin plugin) {
+		 	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_ABBRV, plugin );
+	        daoUtil.setString( 1, strKey );
+	        daoUtil.executeUpdate( );
+	        daoUtil.free( );
+		
+	}
 
 }

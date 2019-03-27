@@ -42,7 +42,7 @@ import java.util.Collection;
 
 public interface IShortUrlDAO
 {
-
+	static final String BEAN_NAME="shorturl.shortUrlDAO";
     /**
      * Insert a new record in the table.
      * 
@@ -75,6 +75,17 @@ public interface IShortUrlDAO
      */
 
     void delete( int nIdShortener, Plugin plugin );
+    
+    /**
+     * Delete a record from the table using key
+     * 
+     * @param strKey
+     *            the shortener key to delete
+     * @param plugin
+     *            the Plugin
+     */
+
+    void delete( String strKey, Plugin plugin );
 
     // /////////////////////////////////////////////////////////////////////////
     // Finders

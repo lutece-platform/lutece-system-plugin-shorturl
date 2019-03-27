@@ -33,9 +33,11 @@
  */
 package fr.paris.lutece.plugins.shorturl.business;
 
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import java.util.Collection;
+
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 /**
  * This class provides instances management methods (create, find, ...) for ShortUrl objects
@@ -45,8 +47,9 @@ public final class ShortUrlHome
 {
 
     // Static variable pointed at the DAO instance
-
-    private static IShortUrlDAO _dao = (IShortUrlDAO) SpringContextService.getPluginBean( "shorturl", "shortUrlDAO" );
+	private static final String PLUGIN_NAME="shorturl";
+    private static IShortUrlDAO _dao = (IShortUrlDAO) SpringContextService.getBean( ShortUrlDAO.BEAN_NAME);
+    private static Plugin _plugin = PluginService.getPlugin( PLUGIN_NAME );
 
     /**
      * Private constructor - this class need not be instantiated
@@ -66,9 +69,9 @@ public final class ShortUrlHome
      * @return The instance of shortener which has been created with its primary key.
      */
 
-    public static ShortUrl create( ShortUrl shortener, Plugin plugin )
+    public static ShortUrl create( ShortUrl shortener)
     {
-        _dao.insert( shortener, plugin );
+        _dao.insert( shortener, _plugin );
 
         return shortener;
     }
@@ -83,9 +86,9 @@ public final class ShortUrlHome
      * @return The instance of the shortener which has been updated
      */
 
-    public static ShortUrl update( ShortUrl shortener, Plugin plugin )
+    public static ShortUrl update( ShortUrl shortener )
     {
-        _dao.store( shortener, plugin );
+        _dao.store( shortener, _plugin );
 
         return shortener;
     }
@@ -93,15 +96,25 @@ public final class ShortUrlHome
     /**
      * Remove the shortener whose identifier is specified in parameter
      * 
-     * @param nShortenerId
-     *            The shortener Id
      * @param plugin
      *            the Plugin
      */
 
-    public static void remove( int nShortenerId, Plugin plugin )
+    public static void remove( int nShortenerId )
     {
-        _dao.delete( nShortenerId, plugin );
+        _dao.delete( nShortenerId, _plugin );
+    }
+    
+    /**
+     * Remove the shortener whose identifier is specified in parameter
+     * 
+     * @param plugin
+     *            the Plugin
+     */
+
+    public static void removeByKey( String strKey )
+    {
+        _dao.delete(strKey, _plugin );
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -112,14 +125,12 @@ public final class ShortUrlHome
      * 
      * @param nKey
      *            The shortener primary key
-     * @param plugin
-     *            the Plugin
      * @return an instance of ShortUrl
      */
 
-    public static ShortUrl findByPrimaryKey( int nKey, Plugin plugin )
+    public static ShortUrl findByPrimaryKey( int nKey )
     {
-        return _dao.load( nKey, plugin );
+        return _dao.load( nKey, _plugin );
     }
 
     /**
@@ -127,27 +138,23 @@ public final class ShortUrlHome
      * 
      * @param nKey
      *            The shortener primary key
-     * @param plugin
-     *            the Plugin
      * @return an instance of ShortUrl
      */
 
-    public static ShortUrl findByPrimaryKey( String strKey, Plugin plugin )
+    public static ShortUrl findByKey( String strKey)
     {
-        return _dao.load( strKey, plugin );
+        return _dao.load( strKey,_plugin );
     }
 
     /**
      * Load the data of all the shortener objects and returns them in form of a collection
      * 
-     * @param plugin
-     *            the Plugin
      * @return the collection which contains the data of all the shortener objects
      */
 
-    public static Collection<ShortUrl> getShortenersList( Plugin plugin )
+    public static Collection<ShortUrl> getShortenersList( )
     {
-        return _dao.selectShortenersList( plugin );
+        return _dao.selectShortenersList( _plugin );
     }
 
 }
