@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,98 +37,118 @@ import java.sql.Timestamp;
 
 /**
  * This is the business class for the object ShortUrl
- */ 
+ */
 public class ShortUrl
 {
-	// Variables declarations 
-	private int _nIdShortener;
-	private String _strShortenerUrl;
-	private String _strAbbreviation;
-	private Timestamp _dCreationDate;
-	private int _nHits;
-	/**
-	 * Returns the IdShortener
-	 * @return The IdShortener
-	 */
-	public int getIdShortener()
-	{
-		return _nIdShortener;
-	}
+    // Variables declarations
+    private int _nIdShortener;
+    private String _strShortenerUrl;
+    private String _strAbbreviation;
+    private Timestamp _dCreationDate;
+    private int _nHits;
 
-	/**
-	 * Sets the IdShortener
-	 * @param nIdShortener The IdShortener
-	 */ 
-	public void setIdShortener( int nIdShortener )
-	{
-		_nIdShortener = nIdShortener;
-	}
-	/**
-	 * Returns the ShortenerUrl
-	 * @return The ShortenerUrl
-	 */
-	public String getShortenerUrl()
-	{
-		return _strShortenerUrl;
-	}
+    /**
+     * Returns the IdShortener
+     * 
+     * @return The IdShortener
+     */
+    public int getIdShortener( )
+    {
+        return _nIdShortener;
+    }
 
-	/**
-	 * Sets the ShortenerUrl
-	 * @param strShortenerUrl The ShortenerUrl
-	 */ 
-	public void setShortenerUrl( String strShortenerUrl )
-	{
-		_strShortenerUrl = strShortenerUrl;
-	}
-	/**
-	 * Returns the Abbreviation
-	 * @return The Abbreviation
-	 */
-	public String getAbbreviation()
-	{
-		return _strAbbreviation;
-	}
+    /**
+     * Sets the IdShortener
+     * 
+     * @param nIdShortener
+     *            The IdShortener
+     */
+    public void setIdShortener( int nIdShortener )
+    {
+        _nIdShortener = nIdShortener;
+    }
 
-	/**
-	 * Sets the Abbreviation
-	 * @param strAbbreviation The Abbreviation
-	 */ 
-	public void setAbbreviation( String strAbbreviation )
-	{
-		_strAbbreviation = strAbbreviation;
-	}
-	/**
-	 * Returns the CreationDate
-	 * @return The CreationDate
-	 */
-	public Timestamp getCreationDate()
-	{
-		return _dCreationDate;
-	}
+    /**
+     * Returns the ShortenerUrl
+     * 
+     * @return The ShortenerUrl
+     */
+    public String getShortenerUrl( )
+    {
+        return _strShortenerUrl;
+    }
 
-	/**
-	 * Sets the CreationDate
-	 * @param timestamp The CreationDate
-	 */ 
-	public void setCreationDate( Timestamp timestamp )
-	{
-		_dCreationDate = timestamp;
-	}
-	/**
-	 * Returns the Hits
-	 * @return The Hits
-	 */
-	public int getHits()
-	{
-		return _nHits;
-	}
+    /**
+     * Sets the ShortenerUrl
+     * 
+     * @param strShortenerUrl
+     *            The ShortenerUrl
+     */
+    public void setShortenerUrl( String strShortenerUrl )
+    {
+        _strShortenerUrl = strShortenerUrl;
+    }
 
-	/**
-	 * Sets the Hits
-	 * @param nHits The Hits
-	 */ 
-	public void setHits( int nHits )
-	{
-		_nHits = nHits;
-	}
+    /**
+     * Returns the Abbreviation
+     * 
+     * @return The Abbreviation
+     */
+    public String getAbbreviation( )
+    {
+        return _strAbbreviation;
+    }
+
+    /**
+     * Sets the Abbreviation
+     * 
+     * @param strAbbreviation
+     *            The Abbreviation
+     */
+    public void setAbbreviation( String strAbbreviation )
+    {
+        _strAbbreviation = strAbbreviation;
+    }
+
+    /**
+     * Returns the CreationDate
+     * 
+     * @return The CreationDate
+     */
+    public Timestamp getCreationDate( )
+    {
+        return _dCreationDate;
+    }
+
+    /**
+     * Sets the CreationDate
+     * 
+     * @param timestamp
+     *            The CreationDate
+     */
+    public void setCreationDate( Timestamp timestamp )
+    {
+        _dCreationDate = timestamp;
+    }
+
+    /**
+     * Returns the Hits
+     * 
+     * @return The Hits
+     */
+    public int getHits( )
+    {
+        return _nHits;
+    }
+
+    /**
+     * Sets the Hits
+     * 
+     * @param nHits
+     *            The Hits
+     */
+    public void setHits( int nHits )
+    {
+        _nHits = nHits;
+    }
 }

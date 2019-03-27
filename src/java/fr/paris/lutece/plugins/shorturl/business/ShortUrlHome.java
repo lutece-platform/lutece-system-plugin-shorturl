@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,22 +46,24 @@ public final class ShortUrlHome
 
     // Static variable pointed at the DAO instance
 
-    private static IShortUrlDAO _dao = ( IShortUrlDAO ) SpringContextService.getPluginBean( "shorturl", "shortUrlDAO" );
-
+    private static IShortUrlDAO _dao = (IShortUrlDAO) SpringContextService.getPluginBean( "shorturl", "shortUrlDAO" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
 
-    private ShortUrlHome(  )
+    private ShortUrlHome( )
     {
     }
 
     /**
      * Create an instance of the shortener class
-     * @param shortener The instance of the ShortUrl which contains the informations to store
-     * @param plugin the Plugin
-     * @return The  instance of shortener which has been created with its primary key.
+     * 
+     * @param shortener
+     *            The instance of the ShortUrl which contains the informations to store
+     * @param plugin
+     *            the Plugin
+     * @return The instance of shortener which has been created with its primary key.
      */
 
     public static ShortUrl create( ShortUrl shortener, Plugin plugin )
@@ -71,12 +73,14 @@ public final class ShortUrlHome
         return shortener;
     }
 
-
     /**
      * Update of the shortener which is specified in parameter
-     * @param shortener The instance of the ShortUrl which contains the data to store
-     * @param plugin the Plugin
-     * @return The instance of the  shortener which has been updated
+     * 
+     * @param shortener
+     *            The instance of the ShortUrl which contains the data to store
+     * @param plugin
+     *            the Plugin
+     * @return The instance of the shortener which has been updated
      */
 
     public static ShortUrl update( ShortUrl shortener, Plugin plugin )
@@ -86,51 +90,58 @@ public final class ShortUrlHome
         return shortener;
     }
 
-
     /**
      * Remove the shortener whose identifier is specified in parameter
-     * @param nShortenerId The shortener Id
-     * @param plugin the Plugin
+     * 
+     * @param nShortenerId
+     *            The shortener Id
+     * @param plugin
+     *            the Plugin
      */
-
 
     public static void remove( int nShortenerId, Plugin plugin )
     {
         _dao.delete( nShortenerId, plugin );
     }
 
-
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // Finders
 
     /**
      * Returns an instance of a shortener whose identifier is specified in parameter
-     * @param nKey The shortener primary key
-     * @param plugin the Plugin
+     * 
+     * @param nKey
+     *            The shortener primary key
+     * @param plugin
+     *            the Plugin
      * @return an instance of ShortUrl
      */
 
     public static ShortUrl findByPrimaryKey( int nKey, Plugin plugin )
     {
-        return _dao.load( nKey, plugin);
+        return _dao.load( nKey, plugin );
     }
 
     /**
      * Returns an instance of a shortener whose identifier is specified in parameter
-     * @param nKey The shortener primary key
-     * @param plugin the Plugin
+     * 
+     * @param nKey
+     *            The shortener primary key
+     * @param plugin
+     *            the Plugin
      * @return an instance of ShortUrl
      */
 
-    public static ShortUrl findByPrimaryKey( String strKey , Plugin plugin )
+    public static ShortUrl findByPrimaryKey( String strKey, Plugin plugin )
     {
-        return _dao.load( strKey, plugin);
+        return _dao.load( strKey, plugin );
     }
-
 
     /**
      * Load the data of all the shortener objects and returns them in form of a collection
-     * @param plugin the Plugin
+     * 
+     * @param plugin
+     *            the Plugin
      * @return the collection which contains the data of all the shortener objects
      */
 
@@ -140,4 +151,3 @@ public final class ShortUrlHome
     }
 
 }
-

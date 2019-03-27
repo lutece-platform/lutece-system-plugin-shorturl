@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,200 +40,202 @@ import fr.paris.lutece.util.sql.DAOUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
 /**
  * This class provides Data Access methods for ShortUrl objects
  */
 
 public final class ShortUrlDAO implements IShortUrlDAO
 {
-	
-	// Constants
-	
-	private static final String SQL_QUERY_NEW_PK = "SELECT max( id_shorturl ) FROM shorturl";
-	private static final String SQL_QUERY_SELECT = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl WHERE id_shorturl = ?";
-	private static final String SQL_QUERY_SELECT_BY_ABBRV = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl WHERE abbreviation = ?";
-	
-	private static final String SQL_QUERY_INSERT = "INSERT INTO shorturl ( id_shorturl, shorturl_url, abbreviation, creation_date, hits ) VALUES ( ?, ?, ?, ?, ? ) ";
-	private static final String SQL_QUERY_DELETE = "DELETE FROM shorturl WHERE id_shorturl = ? ";
-	private static final String SQL_QUERY_UPDATE = "UPDATE shorturl SET id_shorturl = ?, shorturl_url = ?, abbreviation = ?, creation_date = ?, hits = ? WHERE id_shorturl = ?";
-	private static final String SQL_QUERY_SELECTALL = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl";
 
+    // Constants
 
-	
-	/**
-	 * Generates a new primary key
-         * @param plugin The Plugin
-	 * @return The new primary key
-	 */
-    
-	public int newPrimaryKey( Plugin plugin)
-	{
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK , plugin  );
-		daoUtil.executeQuery();
+    private static final String SQL_QUERY_NEW_PK = "SELECT max( id_shorturl ) FROM shorturl";
+    private static final String SQL_QUERY_SELECT = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl WHERE id_shorturl = ?";
+    private static final String SQL_QUERY_SELECT_BY_ABBRV = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl WHERE abbreviation = ?";
 
-		int nKey;
+    private static final String SQL_QUERY_INSERT = "INSERT INTO shorturl ( id_shorturl, shorturl_url, abbreviation, creation_date, hits ) VALUES ( ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_DELETE = "DELETE FROM shorturl WHERE id_shorturl = ? ";
+    private static final String SQL_QUERY_UPDATE = "UPDATE shorturl SET id_shorturl = ?, shorturl_url = ?, abbreviation = ?, creation_date = ?, hits = ? WHERE id_shorturl = ?";
+    private static final String SQL_QUERY_SELECTALL = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl";
 
-		if( !daoUtil.next() )
-		{
-			// if the table is empty
-			nKey = 1;
-		}
+    /**
+     * Generates a new primary key
+     * 
+     * @param plugin
+     *            The Plugin
+     * @return The new primary key
+     */
 
-		nKey = daoUtil.getInt( 1 ) + 1;
-		daoUtil.free();
+    public int newPrimaryKey( Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin );
+        daoUtil.executeQuery( );
 
-		return nKey;
-	}
+        int nKey;
 
+        if ( !daoUtil.next( ) )
+        {
+            // if the table is empty
+            nKey = 1;
+        }
 
+        nKey = daoUtil.getInt( 1 ) + 1;
+        daoUtil.free( );
 
+        return nKey;
+    }
 
-	/**
-	 * Insert a new record in the table.
-	 * @param shorturl instance of the ShortUrl object to insert
-         * @param plugin The plugin
-	 */
+    /**
+     * Insert a new record in the table.
+     * 
+     * @param shorturl
+     *            instance of the ShortUrl object to insert
+     * @param plugin
+     *            The plugin
+     */
 
-	public void insert( ShortUrl shortUrl, Plugin plugin )
-	{
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT , plugin );
-                
-		shortUrl.setIdShortener( newPrimaryKey( plugin ) );
-                
-                daoUtil.setInt ( 1, shortUrl.getIdShortener ( ) );
-                daoUtil.setString ( 2, shortUrl.getShortenerUrl ( ) );
-                daoUtil.setString ( 3, shortUrl.getAbbreviation ( ) );
-                daoUtil.setTimestamp( 4, shortUrl.getCreationDate ( ) );
-                daoUtil.setInt ( 5, shortUrl.getHits ( ) );
+    public void insert( ShortUrl shortUrl, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
 
-		daoUtil.executeUpdate();
-		daoUtil.free();
-	}
+        shortUrl.setIdShortener( newPrimaryKey( plugin ) );
 
+        daoUtil.setInt( 1, shortUrl.getIdShortener( ) );
+        daoUtil.setString( 2, shortUrl.getShortenerUrl( ) );
+        daoUtil.setString( 3, shortUrl.getAbbreviation( ) );
+        daoUtil.setTimestamp( 4, shortUrl.getCreationDate( ) );
+        daoUtil.setInt( 5, shortUrl.getHits( ) );
 
-	/**
-	 * Load the data of the shortener from the table
-	 * @param nId The identifier of the shortener
-         * @param plugin The plugin
-	 * @return the instance of the ShortUrl
-	 */
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
+    }
 
+    /**
+     * Load the data of the shortener from the table
+     * 
+     * @param nId
+     *            The identifier of the shortener
+     * @param plugin
+     *            The plugin
+     * @return the instance of the ShortUrl
+     */
 
-        public ShortUrl load( int nId, Plugin plugin )
-	{
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT , plugin );
-		daoUtil.setInt( 1 , nId );
-		daoUtil.executeQuery();
+    public ShortUrl load( int nId, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
+        daoUtil.setInt( 1, nId );
+        daoUtil.executeQuery( );
 
-		ShortUrl shortUrl = null;
+        ShortUrl shortUrl = null;
 
-		if ( daoUtil.next() )
-		{
-			shortUrl = new ShortUrl();
+        if ( daoUtil.next( ) )
+        {
+            shortUrl = new ShortUrl( );
 
-                        shortUrl.setIdShortener( daoUtil.getInt(  1 ) );
-                        shortUrl.setShortenerUrl( daoUtil.getString(  2 ) );
-                        shortUrl.setAbbreviation( daoUtil.getString(  3 ) );
-                        shortUrl.setCreationDate( daoUtil.getTimestamp(  4 ) );
-                        shortUrl.setHits( daoUtil.getInt(  5 ) );
-		}
+            shortUrl.setIdShortener( daoUtil.getInt( 1 ) );
+            shortUrl.setShortenerUrl( daoUtil.getString( 2 ) );
+            shortUrl.setAbbreviation( daoUtil.getString( 3 ) );
+            shortUrl.setCreationDate( daoUtil.getTimestamp( 4 ) );
+            shortUrl.setHits( daoUtil.getInt( 5 ) );
+        }
 
-		daoUtil.free();
-		return shortUrl;
-	}
+        daoUtil.free( );
+        return shortUrl;
+    }
 
+    /**
+     * Delete a record from the table
+     * 
+     * @param nShortenerId
+     *            The identifier of the shortener
+     * @param plugin
+     *            The plugin
+     */
 
-	/**
-	 * Delete a record from the table
-         * @param nShortenerId The identifier of the shortener
-         * @param plugin The plugin
-	 */
+    public void delete( int nShortenerId, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
+        daoUtil.setInt( 1, nShortenerId );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
+    }
 
-	public void delete( int nShortenerId, Plugin plugin )
-	{
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE , plugin );
-		daoUtil.setInt( 1 , nShortenerId );
-		daoUtil.executeUpdate();
-		daoUtil.free();
-	}
+    /**
+     * Update the record in the table
+     * 
+     * @param shortUrl
+     *            The reference of the shortener
+     * @param plugin
+     *            The plugin
+     */
 
+    public void store( ShortUrl shortUrl, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
 
-	/**
-	 * Update the record in the table
-	 * @param shortUrl The reference of the shortener
-         * @param plugin The plugin
-	 */
-
-	public void store( ShortUrl shortUrl, Plugin plugin )
-	{
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE , plugin );
-                
         daoUtil.setInt( 1, shortUrl.getIdShortener( ) );
         daoUtil.setString( 2, shortUrl.getShortenerUrl( ) );
         daoUtil.setString( 3, shortUrl.getAbbreviation( ) );
         daoUtil.setTimestamp( 4, shortUrl.getCreationDate( ) );
         daoUtil.setInt( 5, shortUrl.getHits( ) );
         daoUtil.setInt( 6, shortUrl.getIdShortener( ) );
-                
-		daoUtil.executeUpdate( );
-		daoUtil.free( );
-	}
 
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
+    }
 
+    /**
+     * Load the data of all the shorteners and returns them as a collection
+     * 
+     * @param plugin
+     *            The plugin
+     * @return The Collection which contains the data of all the shorteners
+     */
 
-	/**
-	 * Load the data of all the shorteners and returns them as a collection
-         * @param plugin The plugin
-	 * @return The Collection which contains the data of all the shorteners
-	 */
+    public Collection<ShortUrl> selectShortenersList( Plugin plugin )
+    {
+        Collection<ShortUrl> shortenerList = new ArrayList<ShortUrl>( );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
+        daoUtil.executeQuery( );
 
-        public Collection<ShortUrl> selectShortenersList( Plugin plugin )
-	{
-		Collection<ShortUrl> shortenerList = new ArrayList<ShortUrl>(  );
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL , plugin );
-		daoUtil.executeQuery(  );
+        while ( daoUtil.next( ) )
+        {
+            ShortUrl shortener = new ShortUrl( );
 
-		while ( daoUtil.next(  ) )
-		{
-                ShortUrl shortener = new ShortUrl(  );
+            shortener.setIdShortener( daoUtil.getInt( 1 ) );
+            shortener.setShortenerUrl( daoUtil.getString( 2 ) );
+            shortener.setAbbreviation( daoUtil.getString( 3 ) );
+            shortener.setCreationDate( daoUtil.getTimestamp( 4 ) );
+            shortener.setHits( daoUtil.getInt( 5 ) );
 
-                    shortener.setIdShortener( daoUtil.getInt( 1 ) );
-                    shortener.setShortenerUrl( daoUtil.getString( 2 ) );
-                    shortener.setAbbreviation( daoUtil.getString( 3 ) );
-                    shortener.setCreationDate( daoUtil.getTimestamp( 4 ) );
-                    shortener.setHits( daoUtil.getInt( 5 ) );
+            shortenerList.add( shortener );
+        }
 
-                shortenerList.add( shortener );
-		}
+        daoUtil.free( );
+        return shortenerList;
+    }
 
-		daoUtil.free();
-		return shortenerList;
-	}
+    public ShortUrl load( String strKey, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ABBRV, plugin );
+        daoUtil.setString( 1, strKey );
+        daoUtil.executeQuery( );
 
+        ShortUrl shortUrl = null;
 
+        if ( daoUtil.next( ) )
+        {
+            shortUrl = new ShortUrl( );
 
+            shortUrl.setIdShortener( daoUtil.getInt( 1 ) );
+            shortUrl.setShortenerUrl( daoUtil.getString( 2 ) );
+            shortUrl.setAbbreviation( daoUtil.getString( 3 ) );
+            shortUrl.setCreationDate( daoUtil.getTimestamp( 4 ) );
+            shortUrl.setHits( daoUtil.getInt( 5 ) );
+        }
 
-	public ShortUrl load(String strKey, Plugin plugin) {
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ABBRV , plugin );
-		daoUtil.setString( 1 , strKey );
-		daoUtil.executeQuery();
-
-		ShortUrl shortUrl = null;
-
-		if ( daoUtil.next() )
-		{
-			shortUrl = new ShortUrl();
-
-                        shortUrl.setIdShortener( daoUtil.getInt(  1 ) );
-                        shortUrl.setShortenerUrl( daoUtil.getString(  2 ) );
-                        shortUrl.setAbbreviation( daoUtil.getString(  3 ) );
-                        shortUrl.setCreationDate( daoUtil.getTimestamp(  4 ) );
-                        shortUrl.setHits( daoUtil.getInt(  5 ) );
-		}
-
-		daoUtil.free();
-		return shortUrl;
-	}
+        daoUtil.free( );
+        return shortUrl;
+    }
 
 }

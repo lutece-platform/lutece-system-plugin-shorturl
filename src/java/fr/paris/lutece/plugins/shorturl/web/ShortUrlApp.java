@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
  *
  * License 1.0
  */
- 
+
 package fr.paris.lutece.plugins.shorturl.web;
 
 import java.sql.Timestamp;
@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
-
 
 import fr.paris.lutece.plugins.shorturl.business.ShortUrl;
 import fr.paris.lutece.plugins.shorturl.business.ShortUrlHome;
@@ -56,123 +55,128 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.html.HtmlTemplate;
 
-
 /**
  * This class provides a simple implementation of an XPage
  */
 public class ShortUrlApp implements XPageApplication
 {
- private static final String PARAMETER_PAGE = "page";
- private static final String PARAMETER_ACTION_VIEW = "view";
- private static final String PARAMETER_ACTION_DO_CREATE = "do_create";
- private static final String PARAMETER_LONG_URL="url";
- 
- private static final String PROPERTY_PAGE_PATH = "shorturl.pagePathLabel";
- private static final String PROPERTY_PAGE_TITLE = "shorturl.pageTitle";
- private static final String PARAMETER_ACTION = "action";
- private static final String PARAMETER_RESULT = "result";
- private static final String TEMPLATE_CREATE_SHORTURL = "skin/plugins/shorturl/create_shorturl.html";
- private static final String PARAMETER_SHORTURL_ABBREV = "abbreviation";
-private static final String MESSAGE_ABBREVIATION_EXISTS = null;
-private static final String MARK_RESULT = "result";
- 
-     // private fields
-    private Plugin _plugin;   
-     /**
-     * Returns the content of the page shorturl. 
-     * @param request The http request
-     * @param nMode The current mode
-     * @param plugin The plugin object
-     * @throws fr.paris.lutece.portal.service.message.SiteMessageException Message displayed if an exception occurs
+    private static final String PARAMETER_PAGE = "page";
+    private static final String PARAMETER_ACTION_VIEW = "view";
+    private static final String PARAMETER_ACTION_DO_CREATE = "do_create";
+    private static final String PARAMETER_LONG_URL = "url";
+
+    private static final String PROPERTY_PAGE_PATH = "shorturl.pagePathLabel";
+    private static final String PROPERTY_PAGE_TITLE = "shorturl.pageTitle";
+    private static final String PARAMETER_ACTION = "action";
+    private static final String PARAMETER_RESULT = "result";
+    private static final String TEMPLATE_CREATE_SHORTURL = "skin/plugins/shorturl/create_shorturl.html";
+    private static final String PARAMETER_SHORTURL_ABBREV = "abbreviation";
+    private static final String MESSAGE_ABBREVIATION_EXISTS = null;
+    private static final String MARK_RESULT = "result";
+
+    // private fields
+    private Plugin _plugin;
+
+    /**
+     * Returns the content of the page shorturl.
+     * 
+     * @param request
+     *            The http request
+     * @param nMode
+     *            The current mode
+     * @param plugin
+     *            The plugin object
+     * @throws fr.paris.lutece.portal.service.message.SiteMessageException
+     *             Message displayed if an exception occurs
      */
-    public XPage getPage( HttpServletRequest request, int nMode, Plugin plugin )
-        throws SiteMessageException
+    public XPage getPage( HttpServletRequest request, int nMode, Plugin plugin ) throws SiteMessageException
     {
-        XPage page = new XPage(  );
+        XPage page = new XPage( );
 
         String strPluginName = request.getParameter( PARAMETER_PAGE );
         String strAbbreviation = request.getParameter( PARAMETER_SHORTURL_ABBREV );
         String strAction = request.getParameter( PARAMETER_ACTION );
-        String strResult = request.getParameter( PARAMETER_RESULT);
-        
+        String strResult = request.getParameter( PARAMETER_RESULT );
+
         _plugin = PluginService.getPlugin( strPluginName );
 
         page.setTitle( AppPropertiesService.getProperty( PROPERTY_PAGE_TITLE ) );
         page.setPathLabel( AppPropertiesService.getProperty( PROPERTY_PAGE_PATH ) );
-        
-        if (  strAction == null && strAbbreviation == null  )
+
+        if ( strAction == null && strAbbreviation == null )
         {
-        	 page.setContent("");
-        	 
+            page.setContent( "" );
+
         }
         if ( ( strAction != null ) && strAction.equals( PARAMETER_ACTION_VIEW ) )
         {
             page.setContent( viewShortenerUrl( strAbbreviation ) );
         }
-        
+
         if ( ( strAction != null ) && strAction.equals( PARAMETER_ACTION_DO_CREATE ) )
         {
-            if( ShortUrlHome.findByPrimaryKey(strAbbreviation, plugin)!= null)
+            if ( ShortUrlHome.findByPrimaryKey( strAbbreviation, plugin ) != null )
             {
-            	SiteMessageService.setMessage( request, MESSAGE_ABBREVIATION_EXISTS, SiteMessage.TYPE_STOP );
+                SiteMessageService.setMessage( request, MESSAGE_ABBREVIATION_EXISTS, SiteMessage.TYPE_STOP );
             }
-            String strUrl =  request.getParameter( PARAMETER_LONG_URL );
-            
-            String strGenerated = doCreateShortener( strUrl,   new java.sql.Timestamp( new java.util.Date(  ).getTime(  ) ) );
-            page.setContent( createShortUrlContent( strAbbreviation , strGenerated) );
+            String strUrl = request.getParameter( PARAMETER_LONG_URL );
+
+            String strGenerated = doCreateShortener( strUrl, new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
+            page.setContent( createShortUrlContent( strAbbreviation, strGenerated ) );
         }
         if ( ( strAction != null ) && strAction.equals( PARAMETER_ACTION_VIEW ) )
         {
-            page.setContent( createShortUrlContent( strAbbreviation ,strResult) );
+            page.setContent( createShortUrlContent( strAbbreviation, strResult ) );
         }
-        
+
         return page;
     }
 
-	private String doCreateShortener(String strUrl,
-			Timestamp timestamp) {
-		ShortUrl shortened = new ShortUrl(  );
-		shortened.setShortenerUrl(strUrl);
-		String strAbbreviation=(String) getKey().subSequence(0,4);
-		shortened.setAbbreviation(strAbbreviation);
-		shortened.setCreationDate(new java.sql.Timestamp( new java.util.Date(  ).getTime(  ) ));
-		ShortUrl shorte = ShortUrlHome.create(shortened, _plugin);
-		return shorte.getAbbreviation();
-		
-	}
-	private String viewShortenerUrl(String strAbbreviation) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private String createShortUrlContent(String strPageName, String strResult) {
-   	 Map<String, Object> model = new HashMap<String, Object>(  );
-     model.put( MARK_RESULT, strResult );
-     HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_SHORTURL
-    		 , Locale.getDefault(  ), model );
-     return template.getHtml(  );
-	}
-	
-	  private static final char[] symbols = new char[36];
+    private String doCreateShortener( String strUrl, Timestamp timestamp )
+    {
+        ShortUrl shortened = new ShortUrl( );
+        shortened.setShortenerUrl( strUrl );
+        String strAbbreviation = (String) getKey( ).subSequence( 0, 4 );
+        shortened.setAbbreviation( strAbbreviation );
+        shortened.setCreationDate( new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
+        ShortUrl shorte = ShortUrlHome.create( shortened, _plugin );
+        return shorte.getAbbreviation( );
 
-	  static {
-	    for (int idx = 0; idx < 10; ++idx)
-	      symbols[idx] = (char) ('0' + idx);
-	    for (int idx = 10; idx < 36; ++idx)
-	      symbols[idx] = (char) ('a' + idx - 10);
-	  }
+    }
 
-	  private final Random random = new Random();
+    private String viewShortenerUrl( String strAbbreviation )
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	  private final char[] buf =new char[6];
+    private String createShortUrlContent( String strPageName, String strResult )
+    {
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_RESULT, strResult );
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_SHORTURL, Locale.getDefault( ), model );
+        return template.getHtml( );
+    }
 
+    private static final char [ ] symbols = new char [ 36];
 
+    static
+    {
+        for ( int idx = 0; idx < 10; ++idx )
+            symbols [idx] = (char) ( '0' + idx );
+        for ( int idx = 10; idx < 36; ++idx )
+            symbols [idx] = (char) ( 'a' + idx - 10 );
+    }
 
-	  public String getKey()
-	  {
-	    for (int idx = 0; idx < buf.length; ++idx) 
-	      buf[idx] = symbols[random.nextInt(symbols.length)];
-	    return new String(buf);
-	  }
+    private final Random random = new Random( );
 
-	
+    private final char [ ] buf = new char [ 6];
+
+    public String getKey( )
+    {
+        for ( int idx = 0; idx < buf.length; ++idx )
+            buf [idx] = symbols [random.nextInt( symbols.length )];
+        return new String( buf );
+    }
+
 }
