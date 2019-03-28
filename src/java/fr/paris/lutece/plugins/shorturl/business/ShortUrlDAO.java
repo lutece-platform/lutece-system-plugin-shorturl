@@ -50,15 +50,15 @@ public final class ShortUrlDAO implements IShortUrlDAO
 
     // Constants
 
-    private static final String SQL_QUERY_SELECT = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl WHERE id_shorturl = ?";
-    private static final String SQL_QUERY_SELECT_BY_ABBRV = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl WHERE abbreviation = ?";
+    private static final String SQL_QUERY_SELECT = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits, use_once FROM shorturl WHERE id_shorturl = ?";
+    private static final String SQL_QUERY_SELECT_BY_ABBRV = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits, use_once FROM shorturl WHERE abbreviation = ?";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO shorturl ( shorturl_url, abbreviation, creation_date, hits ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO shorturl ( shorturl_url, abbreviation, creation_date, hits , use_once) VALUES ( ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM shorturl WHERE id_shorturl = ? ";
     private static final String SQL_QUERY_DELETE_BY_ABBRV = "DELETE FROM shorturl WHERE abbreviation  = ? ";
     
-    private static final String SQL_QUERY_UPDATE = "UPDATE shorturl SET  shorturl_url = ?, abbreviation = ?, creation_date = ?, hits = ? WHERE id_shorturl = ?";
-    private static final String SQL_QUERY_SELECTALL = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits FROM shorturl";
+    private static final String SQL_QUERY_UPDATE = "UPDATE shorturl SET  shorturl_url = ?, abbreviation = ?, creation_date = ?, hits = ? , use_once = ? WHERE id_shorturl = ?";
+    private static final String SQL_QUERY_SELECTALL = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits, use_once FROM shorturl";
 
    
 
@@ -79,7 +79,7 @@ public final class ShortUrlDAO implements IShortUrlDAO
         daoUtil.setString( 2, shortUrl.getAbbreviation( ) );
         daoUtil.setTimestamp( 3, shortUrl.getCreationDate( ) );
         daoUtil.setInt( 4, shortUrl.getHits( ) );
-
+        daoUtil.setBoolean( 5, shortUrl.isUseOnce( ) );
         daoUtil.executeUpdate( );
         if ( daoUtil.nextGeneratedKey( ) )
         {
@@ -115,6 +115,7 @@ public final class ShortUrlDAO implements IShortUrlDAO
             shortUrl.setAbbreviation( daoUtil.getString( 3 ) );
             shortUrl.setCreationDate( daoUtil.getTimestamp( 4 ) );
             shortUrl.setHits( daoUtil.getInt( 5 ) );
+            shortUrl.setUseOnce( daoUtil.getBoolean( 6 ) );
         }
 
         daoUtil.free( );
@@ -156,7 +157,8 @@ public final class ShortUrlDAO implements IShortUrlDAO
         daoUtil.setString( 3, shortUrl.getAbbreviation( ) );
         daoUtil.setTimestamp( 4, shortUrl.getCreationDate( ) );
         daoUtil.setInt( 5, shortUrl.getHits( ) );
-        daoUtil.setInt( 6, shortUrl.getIdShortener( ) );
+        daoUtil.setBoolean( 6, shortUrl.isUseOnce( ) );
+        daoUtil.setInt( 7, shortUrl.getIdShortener( ) );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -185,6 +187,8 @@ public final class ShortUrlDAO implements IShortUrlDAO
             shortener.setAbbreviation( daoUtil.getString( 3 ) );
             shortener.setCreationDate( daoUtil.getTimestamp( 4 ) );
             shortener.setHits( daoUtil.getInt( 5 ) );
+            shortener.setUseOnce( daoUtil.getBoolean( 6 ) );
+            
 
             shortenerList.add( shortener );
         }
@@ -210,6 +214,7 @@ public final class ShortUrlDAO implements IShortUrlDAO
             shortUrl.setAbbreviation( daoUtil.getString( 3 ) );
             shortUrl.setCreationDate( daoUtil.getTimestamp( 4 ) );
             shortUrl.setHits( daoUtil.getInt( 5 ) );
+            shortUrl.setUseOnce( daoUtil.getBoolean( 6 ) );
         }
 
         daoUtil.free( );

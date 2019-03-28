@@ -45,6 +45,7 @@ public class ShortUrl
     private String _strShortenerUrl;
     private String _strAbbreviation;
     private Timestamp _dCreationDate;
+    private boolean _bUseOnce;
     private int _nHits;
 
     /**
@@ -150,5 +151,15 @@ public class ShortUrl
     public void setHits( int nHits )
     {
         _nHits = nHits;
+    }
+
+    public boolean isUseOnce( )
+    {
+        return _bUseOnce;
+    }
+
+    public void setUseOnce( boolean _bUseOnce )
+    {
+        this._bUseOnce = _bUseOnce;
     }
 }

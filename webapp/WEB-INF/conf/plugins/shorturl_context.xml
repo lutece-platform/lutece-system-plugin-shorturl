@@ -2,4 +2,9 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
  <bean id="shorturl.shortUrlDAO"  class="fr.paris.lutece.plugins.shorturl.business.ShortUrlDAO" />  
+ <bean id="shorturl.keyService"  class="fr.paris.lutece.plugins.shorturl.service.ShortUrlKeyService" />  
+<!-- Used Guid KeyService 
+<bean id="shorturl.keyService"  class="fr.paris.lutece.plugins.shorturl.service.GuidKeyService" />  
+ -->
+
 </beans>

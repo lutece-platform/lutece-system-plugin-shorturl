@@ -28,4 +28,18 @@
             <application-class>fr.paris.lutece.plugins.shorturl.web.ShortUrlApp</application-class>
         </application>
     </applications>
+    
+   <filters>
+		<filter>
+				<filter-name>
+					Short Url Redirect Filter
+				</filter-name>
+				<filter-class>
+					fr.paris.lutece.plugins.shorturl.web.ShortUrlRedirectFilter
+				</filter-class>
+				<url-pattern>
+					/s/*
+				</url-pattern>
+		</filter>	
+   </filters>
 </plug-in>

@@ -39,12 +39,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import fr.paris.lutece.plugins.shorturl.service.ShortUrlRedirectService;
+import org.apache.commons.lang.StringUtils;
+
+import fr.paris.lutece.plugins.shorturl.service.ShortUrlService;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
 import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
 import fr.paris.lutece.portal.web.xpages.XPage;
+import fr.paris.lutece.util.json.JsonResponse;
+import fr.paris.lutece.util.json.JsonUtil;
 
 /**
  * This class provides a simple implementation of an XPage
@@ -54,33 +58,63 @@ public class ShortUrlApp extends MVCApplication
 {
     private static final String VIEW_CREATE = "create";
     private static final String ACTION_DO_CREATE = "do_create";
+    private static final String ACTION_DO_CREATE_WS = "do_create_ws";
+    private static final String ACTION_DO_DELETE_WS = "do_delete_ws";
+
     private static final String PARAMETER_LONG_URL = "url";
+    private static final String PARAMETER_KEY_URL = "key";
+    private static final String PARAMETER_USE_ONCE = "use_once";
+
     private static final String TEMPLATE_CREATE_SHORTURL = "skin/plugins/shorturl/create_shorturl.html";
     private static final String MARK_RESULT = "result";
 
     // private fields
-    private String _strKeyCreate=null;
-
- 
+    private String _strUrlShort = null;
      
-    
+
     @Action( ACTION_DO_CREATE )
     public XPage doCreate( HttpServletRequest request )
     {
-    	 String strUrl = request.getParameter( PARAMETER_LONG_URL );
-    	 _strKeyCreate = ShortUrlRedirectService.createShortener( strUrl );
-    	 return redirectView(request, VIEW_CREATE);
-    	
+        String strUrl = request.getParameter( PARAMETER_LONG_URL );
+        String strUseOnce = request.getParameter( PARAMETER_USE_ONCE );
+        boolean bUseOnce=!StringUtils.isEmpty( strUseOnce )&& strUseOnce.equals( "true" );
+        _strUrlShort =  ShortUrlService.getServletUrl( ShortUrlService.createShortener( strUrl ,bUseOnce),request);
+        return redirectView( request, VIEW_CREATE );
+
     }
+
+    @Action( ACTION_DO_CREATE_WS )
+    public XPage doCreateWs( HttpServletRequest request )
+    {
+        String strUrl = request.getParameter( PARAMETER_LONG_URL );
+        String strUseOnce = request.getParameter( PARAMETER_USE_ONCE );
+        boolean bUseOnce=!StringUtils.isEmpty( strUseOnce )&& strUseOnce.equals( "true" );
+     
+        _strUrlShort =  ShortUrlService.getServletUrl( ShortUrlService.createShortener( strUrl,bUseOnce ),request);
+        
+
+        return responseJSON( JsonUtil.buildJsonResponse( new JsonResponse( _strUrlShort ) ) );
+
+    }
+
+    @Action( ACTION_DO_DELETE_WS )
+    public XPage doDeleteWs( HttpServletRequest request )
+    {
+        String stKey = request.getParameter( PARAMETER_KEY_URL );
+        ShortUrlService.deleteShortener( stKey );
+
+        return responseJSON( JsonUtil.buildJsonResponse( new JsonResponse( "" ) ) );
+
+    }
+
     @View( value = VIEW_CREATE, defaultView = true )
     public XPage createShortUrlContent( HttpServletRequest request )
     {
-    	
-    	Map<String, Object> model = new HashMap<String, Object>( );
-        model.put( MARK_RESULT, _strKeyCreate );
-       
+
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_RESULT, _strUrlShort );
+
         return getXPage( TEMPLATE_CREATE_SHORTURL, request.getLocale( ), model );
     }
-
 
 }

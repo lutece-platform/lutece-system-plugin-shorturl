@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2019, Mairie de Paris
+ * Copyright (c) 2002-2014, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,27 +35,70 @@ package fr.paris.lutece.plugins.shorturl.web;
 
 import java.io.IOException;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.paris.lutece.plugins.shorturl.business.ShortUrl;
-import fr.paris.lutece.plugins.shorturl.business.ShortUrlHome;
-import fr.paris.lutece.plugins.shorturl.service.ShortUrlRedirectService;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.plugins.shorturl.service.ShortUrlService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
-public class ShortUrlRedirect extends HttpServlet
+/**
+ * Filter to prevent unauthenticated access to site if site authentication is enabled
+ */
+public class ShortUrlRedirectFilter implements Filter
 {
-    private static final String PLUGIN_NAME = "shorturl";
-    private static final String PARAMETER_KEY = "key";
-    private static final String MESSAGE_URL_NOT_EXISTS = null;
-    private static final String PROPERTY_SHORTURL_DOES_NOT_EXIST = "shorturl.urlPageNotExist";
-    Plugin _plugin = PluginService.getPlugin( PLUGIN_NAME );
 
-    public static String getUrlParam( HttpServletRequest req )
+    private static final String PROPERTY_SHORTURL_DOES_NOT_EXIST = "shorturl.urlPageNotExist";
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init( FilterConfig config ) throws ServletException
+    {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void destroy( )
+    {
+        // Do nothing
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException
+    {
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
+
+        String strParam = getUrlParam( req );
+        String strKey = strParam.substring( strParam.lastIndexOf( "/" )+1, strParam.length( ) );
+        ShortUrl shortUrl = ShortUrlService.getShortener( strKey );
+        String strDestination = "";
+        if ( shortUrl != null )
+        {
+            strDestination = shortUrl.getShortenerUrl( );
+        }
+        if(shortUrl.isUseOnce( ))
+        {
+            ShortUrlService.deleteShortener( strKey );
+        }
+        resp.sendRedirect( resp.encodeRedirectURL( strDestination ) );
+        return;
+    }
+
+    private static String getUrlParam( HttpServletRequest req )
     {
 
         String reqUri = req.getRequestURI( ).toString( );
@@ -66,22 +109,5 @@ public class ShortUrlRedirect extends HttpServlet
             reqUri += "?" + queryString;
         }
         return reqUri;
-    }
-
-    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
-    {
-        String strParam = getUrlParam( request );
-        String strKey = strParam.substring( strParam.lastIndexOf( "/" ), strParam.length( ) );
-        ShortUrl shortUrl = ShortUrlRedirectService.getShortener(strKey);
-        String strDestination = "";
-        if ( shortUrl == null )
-        {
-            strDestination = AppPropertiesService.getProperty( PROPERTY_SHORTURL_DOES_NOT_EXIST ) + strKey;
-        }
-        else
-        {
-            strDestination = shortUrl.getShortenerUrl( );
-        }
-        response.sendRedirect( response.encodeRedirectURL( strDestination ) );
     }
 }
