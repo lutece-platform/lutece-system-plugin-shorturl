@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import fr.paris.lutece.plugins.shorturl.service.ShortUrlJsonResponse;
 import fr.paris.lutece.plugins.shorturl.service.ShortUrlService;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
@@ -67,9 +68,12 @@ public class ShortUrlApp extends MVCApplication
 
     private static final String TEMPLATE_CREATE_SHORTURL = "skin/plugins/shorturl/create_shorturl.html";
     private static final String MARK_RESULT = "result";
+    
 
     // private fields
     private String _strUrlShort = null;
+    private String _strUrlKey= null;
+    
      
 
     @Action( ACTION_DO_CREATE )
@@ -78,7 +82,9 @@ public class ShortUrlApp extends MVCApplication
         String strUrl = request.getParameter( PARAMETER_LONG_URL );
         String strUseOnce = request.getParameter( PARAMETER_USE_ONCE );
         boolean bUseOnce=!StringUtils.isEmpty( strUseOnce )&& strUseOnce.equals( "true" );
-        _strUrlShort =  ShortUrlService.getServletUrl( ShortUrlService.createShortener( strUrl ,bUseOnce),request);
+        _strUrlKey=ShortUrlService.createShortener( strUrl,bUseOnce );
+        _strUrlShort =  ShortUrlService.getServletUrl(_strUrlKey,request );
+       
         return redirectView( request, VIEW_CREATE );
 
     }
@@ -89,11 +95,11 @@ public class ShortUrlApp extends MVCApplication
         String strUrl = request.getParameter( PARAMETER_LONG_URL );
         String strUseOnce = request.getParameter( PARAMETER_USE_ONCE );
         boolean bUseOnce=!StringUtils.isEmpty( strUseOnce )&& strUseOnce.equals( "true" );
-     
-        _strUrlShort =  ShortUrlService.getServletUrl( ShortUrlService.createShortener( strUrl,bUseOnce ),request);
+        _strUrlKey=ShortUrlService.createShortener( strUrl,bUseOnce );
+        _strUrlShort =  ShortUrlService.getServletUrl(_strUrlKey,request );
         
-
-        return responseJSON( JsonUtil.buildJsonResponse( new JsonResponse( _strUrlShort ) ) );
+        ShortUrlJsonResponse shortUrlJsonResponse=new ShortUrlJsonResponse( _strUrlShort, _strUrlKey );
+        return responseJSON( JsonUtil.buildJsonResponse( shortUrlJsonResponse) );
 
     }
 
