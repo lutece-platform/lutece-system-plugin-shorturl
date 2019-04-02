@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import fr.paris.lutece.plugins.shorturl.service.JsonUtil;
 import fr.paris.lutece.plugins.shorturl.service.ShortUrlJsonResponse;
 import fr.paris.lutece.plugins.shorturl.service.ShortUrlService;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
@@ -48,8 +49,9 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
 import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
 import fr.paris.lutece.portal.web.xpages.XPage;
+import fr.paris.lutece.util.json.ErrorJsonResponse;
 import fr.paris.lutece.util.json.JsonResponse;
-import fr.paris.lutece.util.json.JsonUtil;
+
 
 /**
  * This class provides a simple implementation of an XPage
@@ -65,6 +67,10 @@ public class ShortUrlApp extends MVCApplication
     private static final String PARAMETER_LONG_URL = "url";
     private static final String PARAMETER_KEY_URL = "key";
     private static final String PARAMETER_USE_ONCE = "use_once";
+    
+    private static final String PROPERTY_URL_IS_NOT_VALID="shorturl.UrlIsNotValid";
+    
+    private static final String CODE_URL_IS_NOT="URL_IS_NOT_VALID";
 
     private static final String TEMPLATE_CREATE_SHORTURL = "skin/plugins/shorturl/create_shorturl.html";
     private static final String MARK_RESULT = "result";
@@ -81,6 +87,14 @@ public class ShortUrlApp extends MVCApplication
     {
         String strUrl = request.getParameter( PARAMETER_LONG_URL );
         String strUseOnce = request.getParameter( PARAMETER_USE_ONCE );
+       
+        if(!ShortUrlService.isValidShortUrl( strUrl ))
+        {
+            
+           addError( PROPERTY_URL_IS_NOT_VALID, getLocale( request ) ); 
+        }
+        
+        
         boolean bUseOnce=!StringUtils.isEmpty( strUseOnce )&& strUseOnce.equals( "true" );
         _strUrlKey=ShortUrlService.createShortener( strUrl,bUseOnce );
         _strUrlShort =  ShortUrlService.getServletUrl(_strUrlKey,request );
@@ -94,11 +108,20 @@ public class ShortUrlApp extends MVCApplication
     {
         String strUrl = request.getParameter( PARAMETER_LONG_URL );
         String strUseOnce = request.getParameter( PARAMETER_USE_ONCE );
+        
+        if(!ShortUrlService.isValidShortUrl( strUrl ))
+        {
+            return responseJSON( JsonUtil.buildJsonResponse( new ErrorJsonResponse( CODE_URL_IS_NOT ) ));
+        }
+        
+        
         boolean bUseOnce=!StringUtils.isEmpty( strUseOnce )&& strUseOnce.equals( "true" );
         _strUrlKey=ShortUrlService.createShortener( strUrl,bUseOnce );
         _strUrlShort =  ShortUrlService.getServletUrl(_strUrlKey,request );
         
         ShortUrlJsonResponse shortUrlJsonResponse=new ShortUrlJsonResponse( _strUrlShort, _strUrlKey );
+        
+        
         return responseJSON( JsonUtil.buildJsonResponse( shortUrlJsonResponse) );
 
     }

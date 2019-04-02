@@ -46,7 +46,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import fr.paris.lutece.plugins.shorturl.business.ShortUrl;
 import fr.paris.lutece.plugins.shorturl.service.ShortUrlService;
+import fr.paris.lutece.portal.service.message.SiteMessage;
+import fr.paris.lutece.portal.service.message.SiteMessageException;
+import fr.paris.lutece.portal.service.message.SiteMessageService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.web.constants.Messages;
 
 /**
  * Filter to prevent unauthenticated access to site if site authentication is enabled
@@ -54,7 +59,8 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 public class ShortUrlRedirectFilter implements Filter
 {
 
-    private static final String PROPERTY_SHORTURL_DOES_NOT_EXIST = "shorturl.urlPageNotExist";
+    private static final String MESSAGE_SHORTURL_DOES_NOT_EXIST = "shorturl.messageShortUrlDoesNotExist";
+    private static final String DEFAUlT_ERROR_URL_REDIRECT = "shorturl.defaultErrorUrlRedirect";
 
     /**
      * {@inheritDoc}
@@ -89,11 +95,26 @@ public class ShortUrlRedirectFilter implements Filter
         if ( shortUrl != null )
         {
             strDestination = shortUrl.getShortenerUrl( );
+            if(shortUrl.isUseOnce( ))
+            {
+                ShortUrlService.deleteShortener( strKey );
+            }
         }
-        if(shortUrl.isUseOnce( ))
+        else
         {
-            ShortUrlService.deleteShortener( strKey );
+            String strDefaultRedirectUrl=AppPropertiesService.getProperty( DEFAUlT_ERROR_URL_REDIRECT);
+            try
+            {
+                SiteMessageService.setMessage( req, MESSAGE_SHORTURL_DOES_NOT_EXIST, null,
+                    MESSAGE_SHORTURL_DOES_NOT_EXIST, strDefaultRedirectUrl, "", SiteMessage.TYPE_STOP );
+            }
+            catch ( SiteMessageException lme )
+            {
+                strDestination=AppPathService.getSiteMessageUrl( req ) ;
+            }
         }
+            
+        
         resp.sendRedirect( resp.encodeRedirectURL( strDestination ) );
         return;
     }
