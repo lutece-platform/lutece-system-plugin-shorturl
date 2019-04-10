@@ -42,7 +42,8 @@ import java.util.Collection;
 
 public interface IShortUrlDAO
 {
-	static final String BEAN_NAME="shorturl.shortUrlDAO";
+    static final String BEAN_NAME = "shorturl.shortUrlDAO";
+
     /**
      * Insert a new record in the table.
      * 
@@ -75,7 +76,7 @@ public interface IShortUrlDAO
      */
 
     void delete( int nIdShortener, Plugin plugin );
-    
+
     /**
      * Delete a record from the table using key
      * 

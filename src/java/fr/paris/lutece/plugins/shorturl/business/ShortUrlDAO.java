@@ -56,11 +56,9 @@ public final class ShortUrlDAO implements IShortUrlDAO
     private static final String SQL_QUERY_INSERT = "INSERT INTO shorturl ( shorturl_url, abbreviation, creation_date, hits , use_once) VALUES ( ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM shorturl WHERE id_shorturl = ? ";
     private static final String SQL_QUERY_DELETE_BY_ABBRV = "DELETE FROM shorturl WHERE abbreviation  = ? ";
-    
+
     private static final String SQL_QUERY_UPDATE = "UPDATE shorturl SET  shorturl_url = ?, abbreviation = ?, creation_date = ?, hits = ? , use_once = ? WHERE id_shorturl = ?";
     private static final String SQL_QUERY_SELECTALL = "SELECT id_shorturl, shorturl_url, abbreviation, creation_date, hits, use_once FROM shorturl";
-
-   
 
     /**
      * Insert a new record in the table.
@@ -73,8 +71,8 @@ public final class ShortUrlDAO implements IShortUrlDAO
 
     public void insert( ShortUrl shortUrl, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT,Statement.RETURN_GENERATED_KEYS, plugin );
-        
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin );
+
         daoUtil.setString( 1, shortUrl.getShortenerUrl( ) );
         daoUtil.setString( 2, shortUrl.getAbbreviation( ) );
         daoUtil.setTimestamp( 3, shortUrl.getCreationDate( ) );
@@ -83,7 +81,7 @@ public final class ShortUrlDAO implements IShortUrlDAO
         daoUtil.executeUpdate( );
         if ( daoUtil.nextGeneratedKey( ) )
         {
-        	shortUrl.setIdShortener( daoUtil.getGeneratedKeyInt( 1 ) );
+            shortUrl.setIdShortener( daoUtil.getGeneratedKeyInt( 1 ) );
         }
         daoUtil.free( );
     }
@@ -188,7 +186,6 @@ public final class ShortUrlDAO implements IShortUrlDAO
             shortener.setCreationDate( daoUtil.getTimestamp( 4 ) );
             shortener.setHits( daoUtil.getInt( 5 ) );
             shortener.setUseOnce( daoUtil.getBoolean( 6 ) );
-            
 
             shortenerList.add( shortener );
         }
@@ -221,13 +218,14 @@ public final class ShortUrlDAO implements IShortUrlDAO
         return shortUrl;
     }
 
-	@Override
-	public void delete(String strKey, Plugin plugin) {
-		 	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_ABBRV, plugin );
-	        daoUtil.setString( 1, strKey );
-	        daoUtil.executeUpdate( );
-	        daoUtil.free( );
-		
-	}
+    @Override
+    public void delete( String strKey, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_ABBRV, plugin );
+        daoUtil.setString( 1, strKey );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
+
+    }
 
 }

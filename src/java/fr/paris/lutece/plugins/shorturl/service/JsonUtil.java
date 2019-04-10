@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,20 +43,21 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.json.AbstractJsonResponse;
 
-
 /**
  *
- *JsonUtil
+ * JsonUtil
  *
  */
 public class JsonUtil
 {
-    //ObjectMapper
+    // ObjectMapper
     private static ObjectMapper _mapper;
 
     /**
      * return a string containing the JSON flow
-     * @param jsonResponse the JSON Response Object
+     * 
+     * @param jsonResponse
+     *            the JSON Response Object
      * @return return a string containing the JSON flow
      */
     public static String buildJsonResponse( Object jsonResponse )
@@ -65,22 +66,22 @@ public class JsonUtil
 
         if ( _mapper == null )
         {
-            initMapper(  );
+            initMapper( );
         }
 
         try
         {
             strJsonResponse = _mapper.writeValueAsString( jsonResponse );
         }
-        catch ( JsonGenerationException e )
+        catch( JsonGenerationException e )
         {
             AppLogService.error( e );
         }
-        catch ( JsonMappingException e )
+        catch( JsonMappingException e )
         {
             AppLogService.error( e );
         }
-        catch ( IOException e )
+        catch( IOException e )
         {
             AppLogService.error( e );
         }
@@ -88,10 +89,10 @@ public class JsonUtil
         return strJsonResponse;
     }
 
-    private static void initMapper(  )
+    private static void initMapper( )
     {
-        _mapper = new ObjectMapper(  );
-        //_mapper.setPropertyNamingStrategy( PropertyNamingStrategy. );
+        _mapper = new ObjectMapper( );
+        // _mapper.setPropertyNamingStrategy( PropertyNamingStrategy. );
         _mapper.setSerializationInclusion( JsonSerialize.Inclusion.NON_NULL );
     }
 }

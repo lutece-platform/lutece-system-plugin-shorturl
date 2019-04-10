@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.shorturl.service;
 
 import java.util.UUID;
 
-
 /**
  *
  * Service for generating GUID key
@@ -43,23 +42,22 @@ import java.util.UUID;
  */
 public class GuidKeyService extends AbstractKeyService
 {
-    
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public String generateNewKey(  )
+    public String generateNewKey( )
     {
         UUID key = UUID.randomUUID( );
 
         return key.toString( );
 
     }
+
     @Override
     public void initService( )
     {
-        
-        
+
     }
 }

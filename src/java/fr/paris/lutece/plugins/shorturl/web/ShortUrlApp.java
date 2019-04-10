@@ -52,9 +52,8 @@ import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.util.json.ErrorJsonResponse;
 import fr.paris.lutece.util.json.JsonResponse;
 
-
 /**
- * This class provides a simple implementation of an XPage
+ * ShortUrlApp use for creating/deleting short Url
  */
 @Controller( xpageName = "shorturl", pageTitleI18nKey = "shorturl.pageTitle", pagePathI18nKey = "shorturl.pagePathLabel" )
 public class ShortUrlApp extends MVCApplication
@@ -67,64 +66,81 @@ public class ShortUrlApp extends MVCApplication
     private static final String PARAMETER_LONG_URL = "url";
     private static final String PARAMETER_KEY_URL = "key";
     private static final String PARAMETER_USE_ONCE = "use_once";
-    
-    private static final String PROPERTY_URL_IS_NOT_VALID="shorturl.UrlIsNotValid";
-    
-    private static final String CODE_URL_IS_NOT="URL_IS_NOT_VALID";
+
+    private static final String PROPERTY_URL_IS_NOT_VALID = "shorturl.UrlIsNotValid";
+
+    private static final String CODE_URL_IS_NOT = "URL_IS_NOT_VALID";
 
     private static final String TEMPLATE_CREATE_SHORTURL = "skin/plugins/shorturl/create_shorturl.html";
     private static final String MARK_RESULT = "result";
-    
 
     // private fields
     private String _strUrlShort = null;
-    private String _strUrlKey= null;
-    
-     
+    private String _strUrlKey = null;
 
+    /**
+     * create short url
+     * 
+     * @param request
+     *            the request
+     * @return creation view
+     */
     @Action( ACTION_DO_CREATE )
     public XPage doCreate( HttpServletRequest request )
     {
         String strUrl = request.getParameter( PARAMETER_LONG_URL );
         String strUseOnce = request.getParameter( PARAMETER_USE_ONCE );
-       
-        if(!ShortUrlService.isValidShortUrl( strUrl ))
+
+        if ( !ShortUrlService.isValidShortUrl( strUrl ) )
         {
-            
-           addError( PROPERTY_URL_IS_NOT_VALID, getLocale( request ) ); 
+
+            addError( PROPERTY_URL_IS_NOT_VALID, getLocale( request ) );
         }
-        
-        
-        boolean bUseOnce=!StringUtils.isEmpty( strUseOnce )&& strUseOnce.equals( "true" );
-        _strUrlKey=ShortUrlService.createShortener( strUrl,bUseOnce );
-        _strUrlShort =  ShortUrlService.getServletUrl(_strUrlKey,request );
-       
+
+        boolean bUseOnce = !StringUtils.isEmpty( strUseOnce ) && strUseOnce.equals( "true" );
+        _strUrlKey = ShortUrlService.createShortener( strUrl, bUseOnce );
+        _strUrlShort = ShortUrlService.getServletUrl( _strUrlKey, request );
+
         return redirectView( request, VIEW_CREATE );
 
     }
+
+    /**
+     * create short url using rest
+     * 
+     * @param request
+     *            the request
+     * @return json response containing the url created
+     */
 
     @Action( ACTION_DO_CREATE_WS )
     public XPage doCreateWs( HttpServletRequest request )
     {
         String strUrl = request.getParameter( PARAMETER_LONG_URL );
         String strUseOnce = request.getParameter( PARAMETER_USE_ONCE );
-        
-        if(!ShortUrlService.isValidShortUrl( strUrl ))
+
+        if ( !ShortUrlService.isValidShortUrl( strUrl ) )
         {
-            return responseJSON( JsonUtil.buildJsonResponse( new ErrorJsonResponse( CODE_URL_IS_NOT ) ));
+            return responseJSON( JsonUtil.buildJsonResponse( new ErrorJsonResponse( CODE_URL_IS_NOT ) ) );
         }
-        
-        
-        boolean bUseOnce=!StringUtils.isEmpty( strUseOnce )&& strUseOnce.equals( "true" );
-        _strUrlKey=ShortUrlService.createShortener( strUrl,bUseOnce );
-        _strUrlShort =  ShortUrlService.getServletUrl(_strUrlKey,request );
-        
-        ShortUrlJsonResponse shortUrlJsonResponse=new ShortUrlJsonResponse( _strUrlShort, _strUrlKey );
-        
-        
-        return responseJSON( JsonUtil.buildJsonResponse( shortUrlJsonResponse) );
+
+        boolean bUseOnce = !StringUtils.isEmpty( strUseOnce ) && strUseOnce.equals( "true" );
+        _strUrlKey = ShortUrlService.createShortener( strUrl, bUseOnce );
+        _strUrlShort = ShortUrlService.getServletUrl( _strUrlKey, request );
+
+        ShortUrlJsonResponse shortUrlJsonResponse = new ShortUrlJsonResponse( _strUrlShort, _strUrlKey );
+
+        return responseJSON( JsonUtil.buildJsonResponse( shortUrlJsonResponse ) );
 
     }
+
+    /**
+     * delete short url using
+     * 
+     * @param request
+     *            the request containing the url key to delete
+     * @return a Json containig OK if the short url have been deleted
+     */
 
     @Action( ACTION_DO_DELETE_WS )
     public XPage doDeleteWs( HttpServletRequest request )
@@ -135,6 +151,14 @@ public class ShortUrlApp extends MVCApplication
         return responseJSON( JsonUtil.buildJsonResponse( new JsonResponse( "" ) ) );
 
     }
+
+    /**
+     * creation view
+     * 
+     * @param request
+     *            request
+     * @return creation view
+     */
 
     @View( value = VIEW_CREATE, defaultView = true )
     public XPage createShortUrlContent( HttpServletRequest request )

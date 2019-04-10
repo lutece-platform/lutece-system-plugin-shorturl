@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.shorturl.service;
 
-
 /**
  *
  * Service for generating key
@@ -45,15 +44,14 @@ public interface IKeyService
 
     /**
      * Generate a key
+     * 
      * @return a Guid key
      */
-     String generateNewKey(  );
-    
+    String generateNewKey( );
+
     /**
      * initService
      */
-    void initService();
- 
-    
-    
+    void initService( );
+
 }

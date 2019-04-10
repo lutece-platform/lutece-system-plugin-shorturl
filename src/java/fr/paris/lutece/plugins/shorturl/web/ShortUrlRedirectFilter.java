@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,32 +89,31 @@ public class ShortUrlRedirectFilter implements Filter
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String strParam = getUrlParam( req );
-        String strKey = strParam.substring( strParam.lastIndexOf( "/" )+1, strParam.length( ) );
+        String strKey = strParam.substring( strParam.lastIndexOf( "/" ) + 1, strParam.length( ) );
         ShortUrl shortUrl = ShortUrlService.getShortener( strKey );
         String strDestination = "";
         if ( shortUrl != null )
         {
             strDestination = shortUrl.getShortenerUrl( );
-            if(shortUrl.isUseOnce( ))
+            if ( shortUrl.isUseOnce( ) )
             {
                 ShortUrlService.deleteShortener( strKey );
             }
         }
         else
         {
-            String strDefaultRedirectUrl=AppPropertiesService.getProperty( DEFAUlT_ERROR_URL_REDIRECT);
+            String strDefaultRedirectUrl = AppPropertiesService.getProperty( DEFAUlT_ERROR_URL_REDIRECT );
             try
             {
-                SiteMessageService.setMessage( req, MESSAGE_SHORTURL_DOES_NOT_EXIST, null,
-                    MESSAGE_SHORTURL_DOES_NOT_EXIST, strDefaultRedirectUrl, "", SiteMessage.TYPE_STOP );
+                SiteMessageService.setMessage( req, MESSAGE_SHORTURL_DOES_NOT_EXIST, null, MESSAGE_SHORTURL_DOES_NOT_EXIST, strDefaultRedirectUrl, "",
+                        SiteMessage.TYPE_STOP );
             }
-            catch ( SiteMessageException lme )
+            catch( SiteMessageException lme )
             {
-                strDestination=AppPathService.getSiteMessageUrl( req ) ;
+                strDestination = AppPathService.getSiteMessageUrl( req );
             }
         }
-            
-        
+
         resp.sendRedirect( resp.encodeRedirectURL( strDestination ) );
         return;
     }

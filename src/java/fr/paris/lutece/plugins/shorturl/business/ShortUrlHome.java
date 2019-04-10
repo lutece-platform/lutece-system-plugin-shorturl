@@ -47,8 +47,8 @@ public final class ShortUrlHome
 {
 
     // Static variable pointed at the DAO instance
-	private static final String PLUGIN_NAME="shorturl";
-    private static IShortUrlDAO _dao = (IShortUrlDAO) SpringContextService.getBean( ShortUrlDAO.BEAN_NAME);
+    private static final String PLUGIN_NAME = "shorturl";
+    private static IShortUrlDAO _dao = (IShortUrlDAO) SpringContextService.getBean( ShortUrlDAO.BEAN_NAME );
     private static Plugin _plugin = PluginService.getPlugin( PLUGIN_NAME );
 
     /**
@@ -69,7 +69,7 @@ public final class ShortUrlHome
      * @return The instance of shortener which has been created with its primary key.
      */
 
-    public static ShortUrl create( ShortUrl shortener)
+    public static ShortUrl create( ShortUrl shortener )
     {
         _dao.insert( shortener, _plugin );
 
@@ -104,7 +104,7 @@ public final class ShortUrlHome
     {
         _dao.delete( nShortenerId, _plugin );
     }
-    
+
     /**
      * Remove the shortener whose identifier is specified in parameter
      * 
@@ -114,7 +114,7 @@ public final class ShortUrlHome
 
     public static void removeByKey( String strKey )
     {
-        _dao.delete(strKey, _plugin );
+        _dao.delete( strKey, _plugin );
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -141,9 +141,9 @@ public final class ShortUrlHome
      * @return an instance of ShortUrl
      */
 
-    public static ShortUrl findByKey( String strKey)
+    public static ShortUrl findByKey( String strKey )
     {
-        return _dao.load( strKey,_plugin );
+        return _dao.load( strKey, _plugin );
     }
 
     /**
