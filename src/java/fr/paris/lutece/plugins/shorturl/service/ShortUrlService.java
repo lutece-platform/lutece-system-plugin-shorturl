@@ -33,95 +33,148 @@
  */
 package fr.paris.lutece.plugins.shorturl.service;
 
-import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.shorturl.business.ShortUrl;
 import fr.paris.lutece.plugins.shorturl.business.ShortUrlHome;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.http.AntPathMatcher;
 
-public class ShortUrlService
+/**
+ * Creation, lookup and deletion of short urls.
+ */
+public final class ShortUrlService
 {
-
-    private final static PathMatcher PATH_MATCHER = new AntPathMatcher( );
+    private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher( );
     private static final String PROPERTY_SHORTURL_FILTER = "shorturl.filterUrl";
     private static final String PROPERTY_AUTHORIZED_DOMAINS_URL = "shortUrl.authorizedDomainsShortUrl";
     private static final String PROPERTY_PATTERN_UNAUTHORIZED_URL = "shortUrl.unauthorizedDomainsShortUrl";
+    private static final String PATH_FILTER = "s/";
+    private static final String SLASH = "/";
+    private static final String COMMA = ",";
 
+    /**
+     * Private constructor
+     */
+    private ShortUrlService( )
+    {
+    }
+
+    /**
+     * Creates a short url usable several times.
+     *
+     * @param strUrl
+     *            the url to shorten
+     * @return the key of the short url
+     */
     public static String createShortener( String strUrl )
     {
         return createShortener( strUrl, false );
     }
 
+    /**
+     * Creates a short url.
+     *
+     * @param strUrl
+     *            the url to shorten
+     * @param bUseOnce
+     *            true if the short url is deleted at its first use
+     * @return the key of the short url
+     */
     public static String createShortener( String strUrl, boolean bUseOnce )
     {
-
         ShortUrl shortened = new ShortUrl( );
         shortened.setShortenerUrl( strUrl );
-        String strAbbreviation = AbstractKeyService.getService( ).generateNewKey( );
-        shortened.setAbbreviation( strAbbreviation );
-        shortened.setCreationDate( new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
+        shortened.setAbbreviation( AbstractKeyService.getService( ).generateNewKey( ) );
+        shortened.setCreationDate( new Timestamp( System.currentTimeMillis( ) ) );
         shortened.setUseOnce( bUseOnce );
         ShortUrlHome.create( shortened );
+
         return shortened.getAbbreviation( );
     }
 
+    /**
+     * Deletes a short url.
+     *
+     * @param strKey
+     *            the key of the short url
+     */
     public static void deleteShortener( String strKey )
     {
         ShortUrlHome.removeByKey( strKey );
-
-    }
-
-    public static ShortUrl getShortener( String strKey )
-    {
-        return ShortUrlHome.findByKey( strKey );
-
-    }
-
-    public static String getServletUrl( String strKey, HttpServletRequest request )
-    {
-
-        String strServletUrl = AppPropertiesService.getProperty( PROPERTY_SHORTURL_FILTER );
-        if ( StringUtils.isEmpty( strServletUrl ) )
-        {
-            String strBaseUrl = AppPathService.getBaseUrl( request );
-            if ( !strBaseUrl.endsWith( "/" ) )
-            {
-                strBaseUrl += "/";
-            }
-            strServletUrl = strBaseUrl + "s/";
-        }
-
-        return strServletUrl.endsWith( "/" ) ? strServletUrl + strKey : strServletUrl + "/" + strKey;
     }
 
     /**
-     * Test if the BacUrl is a valid url
-     * 
-     * @param strBackUrl
-     *            the back url to test
-     * @return Test if the BackUrl is a valid url
+     * Returns a short url.
+     *
+     * @param strKey
+     *            the key of the short url
+     * @return the short url, or null when the key is unknown
+     */
+    public static ShortUrl getShortener( String strKey )
+    {
+        return ShortUrlHome.findByKey( strKey );
+    }
+
+    /**
+     * Builds the public url of a short url: the configured filter url, else the base url of the request followed by s/.
+     *
+     * @param strKey
+     *            the key of the short url
+     * @param request
+     *            the request
+     * @return the public url
+     */
+    public static String getServletUrl( String strKey, HttpServletRequest request )
+    {
+        String strServletUrl = AppPropertiesService.getProperty( PROPERTY_SHORTURL_FILTER );
+
+        if ( StringUtils.isEmpty( strServletUrl ) )
+        {
+            String strBaseUrl = AppPathService.getBaseUrl( request );
+
+            if ( !strBaseUrl.endsWith( SLASH ) )
+            {
+                strBaseUrl += SLASH;
+            }
+
+            strServletUrl = strBaseUrl + PATH_FILTER;
+        }
+
+        return strServletUrl.endsWith( SLASH ) ? strServletUrl + strKey : strServletUrl + SLASH + strKey;
+    }
+
+    /**
+     * Tests whether an url may be shortened: it matches one of the authorized domains, when some are configured, and not
+     * the unauthorized pattern.
+     *
+     * @param strShortUrl
+     *            the url to test
+     * @return true if the url may be shortened
      */
     public static Boolean isValidShortUrl( String strShortUrl )
     {
+        if ( strShortUrl == null )
+        {
+            return false;
+        }
+
         boolean isValid = true;
         String strAuthorizedDomains = AppPropertiesService.getProperty( PROPERTY_AUTHORIZED_DOMAINS_URL );
         String strPatternUnAuthorizedUrl = AppPropertiesService.getProperty( PROPERTY_PATTERN_UNAUTHORIZED_URL );
 
-        // test on domains url
         if ( !StringUtils.isEmpty( strAuthorizedDomains ) )
         {
             isValid = false;
 
-            String [ ] tabAuthorizedDomains = strAuthorizedDomains.split( "," );
-
-            for ( int i = 0; i < tabAuthorizedDomains.length; i++ )
+            for ( String strAuthorizedDomain : strAuthorizedDomains.split( COMMA ) )
             {
-                if ( PATH_MATCHER.match( tabAuthorizedDomains [i], strShortUrl ) )
+                if ( PATH_MATCHER.match( strAuthorizedDomain, strShortUrl ) )
                 {
                     isValid = true;
 
@@ -130,7 +183,6 @@ public class ShortUrlService
             }
         }
 
-        // test on pattern url not authorized
         if ( isValid && !StringUtils.isEmpty( strPatternUnAuthorizedUrl ) )
         {
             isValid = !strShortUrl.matches( strPatternUnAuthorizedUrl );
@@ -138,5 +190,4 @@ public class ShortUrlService
 
         return isValid;
     }
-
 }

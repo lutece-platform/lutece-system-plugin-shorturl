@@ -1,0 +1,18 @@
+-- liquibase formatted sql
+-- changeset shorturl:create_db_shorturl.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:1 SELECT COUNT(*) FROM shorturl WHERE 1 = 0
+--
+-- Structure for table shorturl
+--
+
+DROP TABLE IF EXISTS shorturl;
+CREATE TABLE shorturl (
+id_shorturl int AUTO_INCREMENT,
+shorturl_url text default '' NOT NULL,
+abbreviation varchar(50) default '' NOT NULL,
+creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+hits int default '0' NOT NULL,
+use_once smallint default 0 NOT NULL,
+    PRIMARY KEY (id_shorturl)
+);

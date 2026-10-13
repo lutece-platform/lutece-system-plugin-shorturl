@@ -42,8 +42,6 @@ import java.util.Collection;
 
 public interface IShortUrlDAO
 {
-    static final String BEAN_NAME = "shorturl.shortUrlDAO";
-
     /**
      * Insert a new record in the table.
      * 
@@ -114,10 +112,13 @@ public interface IShortUrlDAO
     Collection<ShortUrl> selectShortenersList( Plugin plugin );
 
     /**
+     * Load the data of a shortener from its key
      * 
      * @param strKey
+     *            the shortener key
      * @param plugin
-     * @return
+     *            the Plugin
+     * @return the shortener, or null when the key is unknown
      */
     ShortUrl load( String strKey, Plugin plugin );
 

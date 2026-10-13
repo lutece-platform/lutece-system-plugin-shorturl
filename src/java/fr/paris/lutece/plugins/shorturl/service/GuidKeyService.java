@@ -35,13 +35,17 @@ package fr.paris.lutece.plugins.shorturl.service;
 
 import java.util.UUID;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
+
 /**
- *
  * Service for generating GUID key
- *
  */
+@ApplicationScoped
+@Named( GuidKeyService.BEAN_NAME )
 public class GuidKeyService extends AbstractKeyService
 {
+    public static final String BEAN_NAME = "shorturl.guidKeyService";
 
     /**
      * {@inheritDoc}
@@ -49,15 +53,14 @@ public class GuidKeyService extends AbstractKeyService
     @Override
     public String generateNewKey( )
     {
-        UUID key = UUID.randomUUID( );
-
-        return key.toString( );
-
+        return UUID.randomUUID( ).toString( );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initService( )
     {
-
     }
 }

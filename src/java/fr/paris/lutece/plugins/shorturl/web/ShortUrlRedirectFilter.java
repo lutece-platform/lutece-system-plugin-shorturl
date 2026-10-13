@@ -35,14 +35,14 @@ package fr.paris.lutece.plugins.shorturl.web;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import fr.paris.lutece.plugins.shorturl.business.ShortUrl;
 import fr.paris.lutece.plugins.shorturl.service.ShortUrlService;
@@ -51,15 +51,15 @@ import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.portal.web.constants.Messages;
 
 /**
- * Filter to prevent unauthenticated access to site if site authentication is enabled
+ * Redirects a short url to its target.
  */
 public class ShortUrlRedirectFilter implements Filter
 {
 
     private static final String MESSAGE_SHORTURL_DOES_NOT_EXIST = "shorturl.messageShortUrlDoesNotExist";
+    private static final String MESSAGE_SHORTURL_DOES_NOT_EXIST_TITLE = "shorturl.messageShortUrlDoesNotExist.title";
     private static final String DEFAUlT_ERROR_URL_REDIRECT = "shorturl.defaultErrorUrlRedirect";
 
     /**
@@ -88,8 +88,8 @@ public class ShortUrlRedirectFilter implements Filter
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
-        String strParam = getUrlParam( req );
-        String strKey = strParam.substring( strParam.lastIndexOf( "/" ) + 1, strParam.length( ) );
+        String strUri = req.getRequestURI( );
+        String strKey = strUri.substring( strUri.lastIndexOf( '/' ) + 1 );
         ShortUrl shortUrl = ShortUrlService.getShortener( strKey );
         String strDestination = "";
         if ( shortUrl != null )
@@ -105,7 +105,7 @@ public class ShortUrlRedirectFilter implements Filter
             String strDefaultRedirectUrl = AppPropertiesService.getProperty( DEFAUlT_ERROR_URL_REDIRECT );
             try
             {
-                SiteMessageService.setMessage( req, MESSAGE_SHORTURL_DOES_NOT_EXIST, null, MESSAGE_SHORTURL_DOES_NOT_EXIST, strDefaultRedirectUrl, "",
+                SiteMessageService.setMessage( req, MESSAGE_SHORTURL_DOES_NOT_EXIST, null, MESSAGE_SHORTURL_DOES_NOT_EXIST_TITLE, strDefaultRedirectUrl, "",
                         SiteMessage.TYPE_STOP );
             }
             catch( SiteMessageException lme )
@@ -116,18 +116,5 @@ public class ShortUrlRedirectFilter implements Filter
 
         resp.sendRedirect( resp.encodeRedirectURL( strDestination ) );
         return;
-    }
-
-    private static String getUrlParam( HttpServletRequest req )
-    {
-
-        String reqUri = req.getRequestURI( ).toString( );
-        String queryString = req.getQueryString( );
-
-        if ( queryString != null )
-        {
-            reqUri += "?" + queryString;
-        }
-        return reqUri;
     }
 }
