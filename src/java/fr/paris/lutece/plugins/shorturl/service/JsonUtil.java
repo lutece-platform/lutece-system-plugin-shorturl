@@ -33,66 +33,44 @@
  */
 package fr.paris.lutece.plugins.shorturl.service;
 
-import java.io.IOException;
-
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.util.json.AbstractJsonResponse;
 
 /**
- *
- * JsonUtil
- *
+ * JSON serialization of the responses, null fields left out.
  */
-public class JsonUtil
+public final class JsonUtil
 {
-    // ObjectMapper
-    private static ObjectMapper _mapper;
+    private static final ObjectMapper MAPPER = new ObjectMapper( ).setDefaultPropertyInclusion( JsonInclude.Include.NON_NULL );
 
     /**
-     * return a string containing the JSON flow
+     * Private constructor
+     */
+    private JsonUtil( )
+    {
+    }
+
+    /**
+     * Serializes a response to JSON.
      * 
      * @param jsonResponse
-     *            the JSON Response Object
-     * @return return a string containing the JSON flow
+     *            the JSON response object
+     * @return the JSON string, or null when it cannot be serialized
      */
     public static String buildJsonResponse( Object jsonResponse )
     {
-        String strJsonResponse = null;
-
-        if ( _mapper == null )
-        {
-            initMapper( );
-        }
-
         try
         {
-            strJsonResponse = _mapper.writeValueAsString( jsonResponse );
+            return MAPPER.writeValueAsString( jsonResponse );
         }
-        catch( JsonGenerationException e )
+        catch( JsonProcessingException e )
         {
-            AppLogService.error( e );
-        }
-        catch( JsonMappingException e )
-        {
-            AppLogService.error( e );
-        }
-        catch( IOException e )
-        {
-            AppLogService.error( e );
-        }
+            AppLogService.error( e.getMessage( ), e );
 
-        return strJsonResponse;
-    }
-
-    private static void initMapper( )
-    {
-        _mapper = new ObjectMapper( );
-        // _mapper.setPropertyNamingStrategy( PropertyNamingStrategy. );
-        _mapper.setSerializationInclusion( JsonSerialize.Inclusion.NON_NULL );
+            return null;
+        }
     }
 }

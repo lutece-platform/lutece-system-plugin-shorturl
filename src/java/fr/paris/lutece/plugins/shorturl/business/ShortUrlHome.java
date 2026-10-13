@@ -37,7 +37,7 @@ import java.util.Collection;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import jakarta.enterprise.inject.spi.CDI;
 
 /**
  * This class provides instances management methods (create, find, ...) for ShortUrl objects
@@ -48,7 +48,7 @@ public final class ShortUrlHome
 
     // Static variable pointed at the DAO instance
     private static final String PLUGIN_NAME = "shorturl";
-    private static IShortUrlDAO _dao = (IShortUrlDAO) SpringContextService.getBean( ShortUrlDAO.BEAN_NAME );
+    private static IShortUrlDAO _dao = CDI.current( ).select( IShortUrlDAO.class ).get( );
     private static Plugin _plugin = PluginService.getPlugin( PLUGIN_NAME );
 
     /**
@@ -64,8 +64,6 @@ public final class ShortUrlHome
      * 
      * @param shortener
      *            The instance of the ShortUrl which contains the informations to store
-     * @param plugin
-     *            the Plugin
      * @return The instance of shortener which has been created with its primary key.
      */
 
@@ -81,8 +79,6 @@ public final class ShortUrlHome
      * 
      * @param shortener
      *            The instance of the ShortUrl which contains the data to store
-     * @param plugin
-     *            the Plugin
      * @return The instance of the shortener which has been updated
      */
 
@@ -96,8 +92,8 @@ public final class ShortUrlHome
     /**
      * Remove the shortener whose identifier is specified in parameter
      * 
-     * @param plugin
-     *            the Plugin
+     * @param nShortenerId
+     *            the shortener identifier
      */
 
     public static void remove( int nShortenerId )
@@ -106,10 +102,10 @@ public final class ShortUrlHome
     }
 
     /**
-     * Remove the shortener whose identifier is specified in parameter
+     * Remove the shortener whose key is specified in parameter
      * 
-     * @param plugin
-     *            the Plugin
+     * @param strKey
+     *            the shortener key
      */
 
     public static void removeByKey( String strKey )
@@ -136,8 +132,8 @@ public final class ShortUrlHome
     /**
      * Returns an instance of a shortener whose identifier is specified in parameter
      * 
-     * @param nKey
-     *            The shortener primary key
+     * @param strKey
+     *            The shortener key
      * @return an instance of ShortUrl
      */
 

@@ -33,25 +33,26 @@
  */
 package fr.paris.lutece.plugins.shorturl.service;
 
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import jakarta.enterprise.inject.literal.NamedLiteral;
+import jakarta.enterprise.inject.spi.CDI;
 
+/**
+ * Base class of the key services, and access to the key service the site configures.
+ */
 public abstract class AbstractKeyService implements IKeyService
 {
-    private static IKeyService _singleton;
+    private static final String PROPERTY_KEY_SERVICE = "shorturl.keyService";
 
     /**
-     * Returns the instance of the singleton
+     * Returns the key service named by the property shorturl.keyService, the random key service by default.
      *
-     * @return The instance of the singleton
+     * @return the key service
      */
     public static IKeyService getService( )
     {
-        if ( _singleton == null )
-        {
-            _singleton = SpringContextService.getBean( BEAN_KEY_SERVICE );
-            _singleton.initService( );
-        }
+        String strBeanName = AppPropertiesService.getProperty( PROPERTY_KEY_SERVICE, BEAN_KEY_SERVICE );
 
-        return _singleton;
+        return CDI.current( ).select( IKeyService.class, NamedLiteral.of( strBeanName ) ).get( );
     }
 }
